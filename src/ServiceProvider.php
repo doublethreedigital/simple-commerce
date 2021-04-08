@@ -3,6 +3,7 @@
 namespace DoubleThreeDigital\SimpleCommerce;
 
 use Statamic\Events\EntryBlueprintFound;
+use Statamic\Facades\CP\Nav;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
 
@@ -73,6 +74,16 @@ class ServiceProvider extends AddonServiceProvider
         });
 
         SimpleCommerce::bootGateways();
+
+        Nav::extend(function ($nav) {
+            $nav->content('Reporting')
+                ->section('Simple Commerce')
+                ->route('simple-commerce.reports.sales')
+                ->icon('charts')
+                ->children([
+                    'Sales' => cp_route('simple-commerce.reports.sales'),
+                ]);
+        });
     }
 
     protected function bootVendorAssets()
