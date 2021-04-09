@@ -6,12 +6,21 @@
     <header class="mb-3 flex items-center justify-between">
         <h1>Sales Report</h1>
 
-        <div>
-            <select class="text-xs bg-white px-2 py-1 rounded-sm">
+        <div class="flex items-center">
+            <div class="select-input-container w-32">
+                <select class="select-input">
                 <option value="sevenDays">7 Days</option>
                 <option value="fourteenDays">14 Days</option>
                 <option value="thirtyDays">30 Days</option>
-            </select>
+                </select>
+                <div class="select-input-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"></path>
+                    </svg>
+                </div>
+            </div>
+
+            <button class="btn-primary ml-2">Export</button>
         </div>
     </header>
 
@@ -55,11 +64,11 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach($salesPastMonth as $key => [$value, $label])
+                @foreach($salesPastMonth as $key => [$salesCount, $label, $total])
                     <tr>
-                        <td><a href="#">{{ $label }} - {{ $value }}</a></td>
-                        <td></td>
-                        <td></td>
+                        <td><a href="#">{{ $label }}</a></td>
+                        <td>{{ $salesCount }} sales</td>
+                        <td>{{ \DoubleThreeDigital\SimpleCommerce\Facades\Currency::parse($total, \Statamic\Facades\Site::current()) }}</td>
                     </tr>
                 @endforeach
             </tbody>

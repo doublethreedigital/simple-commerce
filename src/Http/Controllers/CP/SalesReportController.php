@@ -13,9 +13,7 @@ class SalesReportController extends CpController
     {
         $orders = collect(Order::all())->filter(function ($order) {
             return $order->get('is_paid') === true;
-        })->map(function ($order) {
-            return Carbon::parse($order->get('paid_date'))->timestamp;
-        })->values();
+        });
 
         return view('simple-commerce::cp.reports.sales.index', [
             'salesPastMonth' => $this->getStatsPastMonth($orders),
@@ -35,11 +33,19 @@ class SalesReportController extends CpController
         $salesPastMonth = [];
 
         foreach ($days as $day) {
-            $count = $orders->filter(function ($timestamp) use ($day) {
-                return Carbon::parse($timestamp)->isSameWeek($day);
-            })->count();
+            $sales = $orders->filter(function ($order) use ($day) {
+                return Carbon::parse($order->get('paid_date'))->isSameWeek($day);
+            });
 
-            $salesPastMonth[] = [$count, "{$day->startOfWeek()->format('d')}-{$day->endOfWeek()->format('d')}"];
+            $totals = $sales->map(function ($order) {
+                return ['grand_total' => $order->data()->get('grand_total')];
+            })->values();
+
+            $salesPastMonth[] = [
+                $sales->count(),
+                "{$day->startOfWeek()->format('d')}-{$day->endOfWeek()->format('d')}",
+                $totals->sum('grand_total'),
+            ];
         }
 
         return $salesPastMonth;
@@ -56,13 +62,21 @@ class SalesReportController extends CpController
         $salesPastWeek = [];
 
         foreach ($days as $day) {
-            $count = $orders->filter(function ($timestamp) use ($day) {
-                $date = Carbon::parse($timestamp);
+            $sales = $orders->filter(function ($order) use ($day) {
+                $date = Carbon::parse($order->get('paid_date'));
 
                 return $date->isSameYear($day) && $date->isSameMonth($day) && $date->isSameDay($day);
-            })->count();
+            });
 
-            $salesPastWeek[] = [$count, $day->format('d')];
+            $totals = $sales->map(function ($order) {
+                return ['grand_total' => $order->data()->get('grand_total')];
+            })->values();
+
+            $salesPastWeek[] = [
+                $sales->count(),
+                $day->format('d'),
+                $totals->sum('grand_total'),
+            ];
         }
 
         return $salesPastWeek;
@@ -79,11 +93,19 @@ class SalesReportController extends CpController
         $salesPastDay = [];
 
         foreach ($hours as $hour) {
-            $count = $orders->filter(function ($timestamp) use ($hour) {
-                return Carbon::parse($timestamp)->isBetween($hour->copy()->subHour(), $hour->copy()->addHours(3));
-            })->count();
+            $sales = $orders->filter(function ($order) use ($hour) {
+                return Carbon::parse($order->get('paid_date'))->isBetween($hour->copy()->subHour(), $hour->copy()->addHours(3));
+            });
 
-            $salesPastDay[] = [$count, $hour->format('H:00')];
+            $totals = $sales->map(function ($order) {
+                return ['grand_total' => $order->data()->get('grand_total')];
+            })->values();
+
+            $salesPastDay[] = [
+                $sales->count(),
+                $hour->format('H:00'),
+                $totals->sum('grand_total'),
+            ];
         }
 
         return $salesPastDay;
