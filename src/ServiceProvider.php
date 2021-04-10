@@ -84,6 +84,8 @@ class ServiceProvider extends AddonServiceProvider
                     'Sales' => cp_route('simple-commerce.reports.sales'),
                 ]);
         });
+
+        Filters\OrderDateFiltering::register();
     }
 
     protected function bootVendorAssets()
