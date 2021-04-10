@@ -33,8 +33,8 @@ class OrderDateFiltering extends Filter
 
         $query
             ->where('is_paid', true)
-            ->where('paid_date', '>=', Carbon::parse($values['start']))
-            ->where('paid_date', '<=', Carbon::parse($values['end']));
+            ->whereDate('paid_date', '>=', Carbon::parse($values['start']))
+            ->whereDate('paid_date', '<=', Carbon::parse($values['end']));
     }
 
     public function badge($values)
