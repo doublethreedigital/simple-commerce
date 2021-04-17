@@ -10,7 +10,7 @@ Statamic.$components.register('product-variants-fieldtype', ProductVariantsFildt
 
 // Reports
 
-import SalesReport from './components/SalesReport.vue'
+import SalesReport from './components/Reports/SalesReport.vue'
 
 Statamic.$components.register('sales-report', SalesReport)
 
