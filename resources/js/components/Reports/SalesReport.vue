@@ -10,6 +10,7 @@
                         <option value="week">This week</option>
                         <option value="month">Last month</option>
                     </select>
+
                     <div class="select-input-toggle">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                             <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"></path>
@@ -17,22 +18,25 @@
                     </div>
                 </div>
 
-                <button class="btn-primary ml-2" @click.native="csvExport">Export</button>
+                <button
+                    class="btn-primary ml-2"
+                    @click.native="csvExport"
+                >Export</button>
             </div>
         </header>
 
         <div class="card p-2 content mb-4">
             <div class="flex flex-wrap -mx-2 mb-4">
                 <div class="px-4 py-2 w-full">
-                    <div>
+                    <div v-show="currentView === 'day'">
                         <slot name="day"></slot>
                     </div>
 
-                    <div>
+                    <div v-show="currentView === 'week'">
                         <slot name="week"></slot>
                     </div>
 
-                    <div>
+                    <div v-show="currentView === 'month'">
                         <slot name="month"></slot>
                     </div>
                 </div>
