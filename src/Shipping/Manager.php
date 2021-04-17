@@ -2,6 +2,7 @@
 
 namespace DoubleThreeDigital\SimpleCommerce\Shipping;
 
+use DoubleThreeDigital\SimpleCommerce\Contracts\Order;
 use DoubleThreeDigital\SimpleCommerce\Contracts\ShippingManager as Contract;
 use DoubleThreeDigital\SimpleCommerce\Exceptions\ShippingMethodDoesNotExist;
 use DoubleThreeDigital\SimpleCommerce\Orders\Address;
@@ -28,7 +29,7 @@ class Manager implements Contract
         return $this->resolve()->description();
     }
 
-    public function calculateCost(Entry $order): int
+    public function calculateCost(Order $order): int
     {
         return $this->resolve()->calculateCost($order);
     }
@@ -41,7 +42,9 @@ class Manager implements Contract
     protected function resolve()
     {
         if (!resolve($this->className)) {
-            throw new ShippingMethodDoesNotExist(__('simple-commerce::shipping.shipping_method_does_not_exist', ['shippingMethod' => $this->className]));
+            throw new ShippingMethodDoesNotExist(__('simple-commerce::messages.shipping_method_does_not_exist', [
+                'shippingMethod' => $this->className,
+            ]));
         }
 
         return resolve($this->className);

@@ -4,7 +4,7 @@ namespace DoubleThreeDigital\SimpleCommerce\Tests;
 
 use Statamic\Facades\Collection;
 
-trait CollectionSetup
+trait SetupCollections
 {
     public function setupCollections()
     {
@@ -16,8 +16,8 @@ trait CollectionSetup
 
     public function setupProducts()
     {
-        return Collection::make(config('simple-commerce.collections.products'))
-            ->title(__('simple-commerce::messages.default_collections.products'))
+        return Collection::make('products')
+            ->title('Products')
             ->pastDateBehavior('public')
             ->futureDateBehavior('private')
             ->sites(['default'])
@@ -27,24 +27,24 @@ trait CollectionSetup
 
     public function setupCustomers()
     {
-        return Collection::make(config('simple-commerce.collections.customers'))
-            ->title(__('simple-commerce::messages.default_collections.customers'))
+        return Collection::make('customers')
+            ->title('Customers')
             ->sites(['default'])
             ->save();
     }
 
     public function setupOrders()
     {
-        return Collection::make(config('simple-commerce.collections.orders'))
-            ->title(__('simple-commerce::messages.default_collections.orders'))
+        return Collection::make('orders')
+            ->title('Orders')
             ->sites(['default'])
             ->save();
     }
 
     public function setupCoupons()
     {
-        return Collection::make(config('simple-commerce.collections.coupons'))
-            ->title(__('simple-commerce::messages.default_collections.coupons'))
+        return Collection::make('coupons')
+            ->title('Coupons')
             ->sites(['default'])
             ->save();
     }

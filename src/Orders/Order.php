@@ -5,7 +5,6 @@ namespace DoubleThreeDigital\SimpleCommerce\Orders;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Calculator as CalculatorContract;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Order as Contract;
 use DoubleThreeDigital\SimpleCommerce\Events\CouponRedeemed;
-use DoubleThreeDigital\SimpleCommerce\Events\CustomerAddedToCart;
 use DoubleThreeDigital\SimpleCommerce\Events\OrderPaid as OrderPaidEvent;
 use DoubleThreeDigital\SimpleCommerce\Events\OrderSaved;
 use DoubleThreeDigital\SimpleCommerce\Facades\Coupon;
@@ -133,7 +132,6 @@ class Order implements Contract
         return false;
     }
 
-    // TODO: refactor & rename to 'markPaid'
     public function markAsPaid(): self
     {
         $this->published = true;
@@ -150,16 +148,14 @@ class Order implements Contract
         return $this;
     }
 
-    // TODO: rename method
-    public function buildReceipt(): string
+    public function receiptUrl(): string
     {
         return URL::temporarySignedRoute('statamic.simple-commerce.receipt.show', now()->addHour(), [
             'orderId' => $this->id,
         ]);
     }
 
-    // TODO: rename method
-    public function calculateTotals(): self
+    public function recalculate(): self
     {
         $calculate = resolve(CalculatorContract::class)->calculate($this);
 
@@ -180,14 +176,11 @@ class Order implements Contract
     public function afterSaved()
     {
         event(new OrderSaved($this));
-
-        // TODO: remove this event
-        event(new CustomerAddedToCart($this->entry));
     }
 
     public function collection(): string
     {
-        return config('simple-commerce.collections.orders');
+        return SimpleCommerce::orderDriver()['collection'];
     }
 
     public static function bindings(): array

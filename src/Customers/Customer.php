@@ -5,6 +5,7 @@ namespace DoubleThreeDigital\SimpleCommerce\Customers;
 use DoubleThreeDigital\SimpleCommerce\Contracts\Customer as Contract;
 use DoubleThreeDigital\SimpleCommerce\Exceptions\CustomerNotFound;
 use DoubleThreeDigital\SimpleCommerce\Facades\Order;
+use DoubleThreeDigital\SimpleCommerce\SimpleCommerce;
 use DoubleThreeDigital\SimpleCommerce\Support\Traits\HasData;
 use DoubleThreeDigital\SimpleCommerce\Support\Traits\IsEntry;
 use Illuminate\Notifications\Notifiable;
@@ -30,13 +31,12 @@ class Customer implements Contract
 
     public function findByEmail(string $email): self
     {
-        $entry = Entry::query()
-            ->where('collection', config('simple-commerce.collections.customers'))
-            ->where('slug', Str::slug($email))
-            ->first();
+        $entry = Entry::findBySlug(Str::slug($email), $this->collection());
 
         if (!$entry) {
-            throw new CustomerNotFound(__('simple-commerce::customers.customer_not_found_by_email', ['email' => $email]));
+            throw new CustomerNotFound(__('simple-commerce::messages.customer_not_found_by_email', [
+                'email' => $email,
+            ]));
         }
 
         return $this->find($entry->id());
@@ -65,7 +65,7 @@ class Customer implements Contract
             $email = $this->get('email');
         }
 
-        $title = __('simple-commerce::customers.customer_entry_title', [
+        $title = __('simple-commerce::messages.customer_title', [
             'name'  => $name,
             'email' => $email,
         ]);
@@ -80,7 +80,6 @@ class Customer implements Contract
         return $this;
     }
 
-    // TODO: add to interface in next version
     public function orders(): Collection
     {
         return collect($this->has('orders') ? $this->get('orders') : [])
@@ -89,7 +88,6 @@ class Customer implements Contract
             });
     }
 
-    // TODO: add to interface in next version
     public function addOrder($orderId): self
     {
         $orders = $this->has('orders') ? $this->get('orders') : [];
@@ -107,7 +105,7 @@ class Customer implements Contract
 
     public function collection(): string
     {
-        return config('simple-commerce.collections.customers');
+        return SimpleCommerce::customerDriver()['collection'];
     }
 
     public static function bindings(): array

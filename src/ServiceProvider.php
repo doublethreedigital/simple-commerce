@@ -6,6 +6,7 @@ use Statamic\Events\EntryBlueprintFound;
 use Statamic\Facades\CP\Nav;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Statamic;
+use Statamic\UpdateScripts\UpdateScript;
 
 class ServiceProvider extends AddonServiceProvider
 {
@@ -23,7 +24,6 @@ class ServiceProvider extends AddonServiceProvider
         Console\Commands\MakeGateway::class,
         Console\Commands\MakeShippingMethod::class,
         Console\Commands\InstallCommand::class,
-        Console\Commands\UpgradeCommand::class,
     ];
 
     protected $fieldtypes = [
@@ -59,6 +59,8 @@ class ServiceProvider extends AddonServiceProvider
     ];
 
     protected $updateScripts = [
+        UpdateScripts\AddBlueprintFields::class,
+        UpdateScripts\MigrateConfig::class,
         UpdateScripts\MigrateLineItemMetadata::class,
     ];
 
@@ -123,13 +125,13 @@ class ServiceProvider extends AddonServiceProvider
     protected function bindContracts()
     {
         collect([
-            Contracts\Order::class              => Orders\Order::class,
-            Contracts\Coupon::class             => Coupons\Coupon::class,
-            Contracts\Currency::class           => Support\Currency::class,
-            Contracts\Customer::class           => Customers\Customer::class,
-            Contracts\Product::class            => Products\Product::class,
+            Contracts\Order::class              => SimpleCommerce::orderDriver()['driver'],
+            Contracts\Coupon::class             => SimpleCommerce::couponDriver()['driver'],
+            Contracts\Customer::class           => SimpleCommerce::customerDriver()['driver'],
+            Contracts\Product::class            => SimpleCommerce::productDriver()['driver'],
             Contracts\GatewayManager::class     => Gateways\Manager::class,
             Contracts\ShippingManager::class    => Shipping\Manager::class,
+            Contracts\Currency::class           => Support\Currency::class,
             Contracts\Calculator::class         => Orders\Calculator::class,
         ])->each(function ($concrete, $abstract) {
             if (! $this->app->bound($abstract)) {

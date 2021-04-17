@@ -100,7 +100,7 @@ class StripeGateway extends BaseGateway implements Gateway
     {
         $this->setUpWithStripe();
 
-        $charge = PaymentIntent::retrieve($order->data()['gateway_data']['intent']);
+        $charge = PaymentIntent::retrieve($order->data()->get('gateway_data')['intent']);
 
         return new GatewayResponse(true, $charge->toArray());
     }
@@ -115,7 +115,7 @@ class StripeGateway extends BaseGateway implements Gateway
         }
 
         $refund = Refund::create([
-            'payment_intent' => $order->data()['gateway_data']['intent'],
+            'payment_intent' => $order->data()->get('gateway_data')['intent'],
         ]);
 
         return new GatewayResponse(true, $refund->toArray());
@@ -154,7 +154,7 @@ class StripeGateway extends BaseGateway implements Gateway
     protected function setUpWithStripe()
     {
         if (! $this->config()->has('secret')) {
-            throw new StripeSecretMissing(__('simple-commerce::gateways.stripe.stripe_secret_missing'));
+            throw new StripeSecretMissing(__('simple-commerce::messages.gateways.stripe.stripe_secret_missing'));
         }
 
         Stripe::setApiKey($this->config()->get('secret'));
