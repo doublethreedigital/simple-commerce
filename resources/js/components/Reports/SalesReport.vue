@@ -36,7 +36,7 @@
                         <slot name="week"></slot>
                     </div>
 
-                    <div v-show="currentView === 'month'">
+                    <div :class="{ 'hidden' : currentView !== 'month' }">
                         <slot name="month"></slot>
                     </div>
                 </div>
@@ -76,7 +76,7 @@ export default {
 
     data() {
         return {
-            currentView: 'day',
+            currentView: 'month',
         }
     },
 
